@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "L3GJ0N", email = "dome.muller@gmail.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "dash>=2.14.0",
     "plotly>=5.18.0",
