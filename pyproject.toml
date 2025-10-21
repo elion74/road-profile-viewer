@@ -19,3 +19,54 @@ road-profile-viewer = "road_profile_viewer:main"
 [build-system]
 requires = ["uv_build>=0.8.19,<0.9.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.406",
+    "ruff>=0.14.0",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "B", "C4", "UP"]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "lf"
+indent-style = "space"
+
+[tool.pyright]
+# Strikte Type-Prüfung
+typeCheckingMode = "strict"
+
+# Python-Version
+pythonVersion = "3.12"
+
+# Nur Source-Dateien einschließen
+include = ["src"]
+
+# Verzeichnisse ausschließen
+exclude = [
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+# Reporting-Optionen
+reportMissingTypeStubs = true
+reportUnknownMemberType = "warning"
+reportUnknownParameterType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownArgumentType = "warning"
