@@ -10,11 +10,10 @@ for educational purposes). It creates an interactive Dash application that visua
 - Distance information on hover
 """
 
-import numpy as np
-from dash import Dash, html, dcc, Input, Output
-import plotly.graph_objects as go
-import sys, os  # PEP8 Violation: Multiple imports on one line
 
+import numpy as np
+import plotly.graph_objects as go
+from dash import Dash, Input, Output, dcc, html
 
 # =============================================================================
 # ROAD PROFILE GENERATION
