@@ -11,9 +11,14 @@ for educational purposes). It creates an interactive Dash application that visua
 """
 
 
+from typing import TypeVar
+
 import numpy as np
 import plotly.graph_objects as go
 from dash import Dash, Input, Output, dcc, html
+
+# Type variable for numpy arrays
+ArrayType = TypeVar("ArrayType", bound=np.ndarray)
 
 # =============================================================================
 # ROAD PROFILE GENERATION
@@ -21,8 +26,9 @@ from dash import Dash, Input, Output, dcc, html
 
 
 def generate_road_profile(
-    num_points=100, x_max=80
-):  # PEP8 Violation: Missing space after comma
+    num_points: int = 100,
+    x_max: float = 80.0
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Generate a road profile using a clothoid-like approximation.
 
@@ -44,7 +50,7 @@ def generate_road_profile(
     # Generate equidistant x points from 0 to x_max
     x = np.linspace(0, x_max, num_points)
 
-    # Create a clothoid-like curve using a combination of polynomial and sinusoidal terms
+    # Create a clothoid-like curve using polynomial and sinusoidal terms
     # This creates a road that starts flat and gradually curves
     # Normalize x for the calculation
     x_norm = x / x_max
@@ -68,7 +74,12 @@ def generate_road_profile(
 # =============================================================================
 
 
-def calculate_ray_line(angle_degrees, camera_x=0, camera_y=2.0, x_max=80):
+def calculate_ray_line(
+    angle_degrees: float,
+    camera_x: float = 0.0,
+    camera_y: float = 2.0,
+    x_max: float = 80.0
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculate the line representing the camera ray.
 
@@ -115,7 +126,13 @@ def calculate_ray_line(angle_degrees, camera_x=0, camera_y=2.0, x_max=80):
     return x_ray, y_ray
 
 
-def find_intersection(x_road, y_road, angle_degrees, camera_x=0, camera_y=1.5):
+def find_intersection(
+    x_road: np.ndarray,
+    y_road: np.ndarray,
+    angle_degrees: float,
+    camera_x: float = 0.0,
+    camera_y: float = 1.5
+) -> tuple[float | None, float | None, float | None]:
     """
     Find the intersection point between the camera ray and the road profile.
 
@@ -135,7 +152,8 @@ def find_intersection(x_road, y_road, angle_degrees, camera_x=0, camera_y=1.5):
     Returns:
     --------
     tuple of (float, float, float) or (None, None, None)
-        x, y coordinates of intersection and distance from camera, or None if no intersection
+        x, y coordinates of intersection and distance from camera,
+        or None if no intersection is found
     """
     angle_rad = -np.deg2rad(angle_degrees)
 
@@ -186,9 +204,9 @@ def find_intersection(x_road, y_road, angle_degrees, camera_x=0, camera_y=1.5):
     return None, None, None
 
 
-def HelperFunction(val):  # PEP8 Violation: Function name should be snake_case
-    """Unused helper function that violates naming convention"""
-    result = val * 2  # PEP8 Violation: Missing spaces around operators
+def helper_function(val: float) -> float:
+    """Unused helper function"""
+    result = val * 2
     return result
 
 
@@ -252,28 +270,33 @@ def create_dash_app():
             html.Div(
                 [
                     html.H3("Instructions:", style={"color": "#2c3e50"}),
-                    html.Ul(
-                        [
-                            html.Li("The dark grey line represents the road profile"),
-                            html.Li(
-                                "The red point at (0, 2.0) represents the camera position"
-                            ),
-                            html.Li(
-                                "The blue line shows the camera ray at the specified angle"
-                            ),
-                            html.Li(
-                                "The green point shows where the ray intersects the road"
-                            ),
-                            html.Li(
-                                "Hover over the green point to see the distance from camera to intersection"
-                            ),
-                            html.Li(
-                                "Adjust the angle to see how the intersection point changes"
-                            ),
-                            html.Li(
-                                "Negative angles point downward, positive angles point upward"
-                            ),
-                        ]
+                    html.Ul([
+                        html.Li("The dark grey line represents the road profile"),
+                        html.Li(
+                            "The red point at (0, 2.0) represents the camera "
+                            "position"
+                        ),
+                        html.Li(
+                            "The blue line shows the camera ray at the specified "
+                            "angle"
+                        ),
+                        html.Li(
+                            "The green point shows where the ray intersects the "
+                            "road"
+                        ),
+                        html.Li(
+                            "Hover over the green point to see the distance from "
+                            "camera to intersection"
+                        ),
+                        html.Li(
+                            "Adjust the angle to see how the intersection point "
+                            "changes"
+                        ),
+                        html.Li(
+                            "Negative angles point downward, positive angles point "
+                            "upward"
+                        ),
+                    ]
                     ),
                 ],
                 style={
@@ -294,7 +317,7 @@ def create_dash_app():
         ],
         [Input("angle-input", "value")],
     )
-    def update_graph(angle):
+    def update_graph(angle: float | None) -> tuple[go.Figure, str]:
         """
         Update the graph based on the input angle.
 
@@ -315,7 +338,7 @@ def create_dash_app():
         x_road, y_road = generate_road_profile(num_points=100, x_max=80)
 
         # Camera position
-        camera_x, camera_y = 0, 2.0  # PEP8 Violation: Missing spaces after commas
+        camera_x, camera_y = 0, 2.0
 
         # Find intersection first to determine ray length
         x_intersect, y_intersect, distance = find_intersection(
@@ -371,7 +394,7 @@ def create_dash_app():
             )
         )
 
-        # Add camera ray - This is a very long comment that exceeds the recommended 79 character line length limit specified in PEP8 style guide
+        # Add camera ray
         fig.add_trace(
             go.Scatter(
                 x=x_ray,
@@ -393,10 +416,17 @@ def create_dash_app():
                     mode="markers",
                     name="Intersection",
                     marker=dict(size=15, color="green", symbol="star"),
-                    hovertemplate=f"Intersection Point<br>Position: ({x_intersect:.2f}, {y_intersect:.2f})<br>Distance from camera: {distance:.2f}<extra></extra>",
+                    hovertemplate=(
+                        f"Intersection Point<br>"
+                        f"Position: ({x_intersect:.2f}, {y_intersect:.2f})<br>"
+                        f"Distance from camera: {distance:.2f}<extra></extra>"
+                    ),
                 )
             )
-            info_text = f"Intersection found at ({x_intersect:.2f}, {y_intersect:.2f}) | Distance: {distance:.2f} units"
+            info_text = (
+                f"Intersection found at ({x_intersect:.2f}, {y_intersect:.2f}) | "
+                f"Distance: {distance:.2f} units"
+            )
         else:
             info_text = "No intersection found with current angle"
 
