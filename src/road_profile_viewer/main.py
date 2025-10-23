@@ -204,12 +204,6 @@ def find_intersection(
     return None, None, None
 
 
-def helper_function(val: float) -> float:
-    """Unused helper function"""
-    result = val * 2
-    return result
-
-
 # =============================================================================
 # DASH APPLICATION
 # =============================================================================
